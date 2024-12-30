@@ -1,0 +1,21 @@
+services:
+  kafka-cluster:
+    image: dougdonohoe/fast-data-dev
+    container_name: kafka-cluster
+    environment:
+      ADV_HOST: 127.0.0.1
+      RUNTESTS: 0
+      SAMPLEDATA: 0
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_PLUGIN_PATH: /var/run/connect/connectors/third-party
+    ports:
+      - "3030:3030"
+      - "8083:8083"
+      - "9092:9092"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083" ]
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 10
