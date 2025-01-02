@@ -18,8 +18,6 @@ sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /var/lib
 
 sudo bash -c 'echo "host all  all    0.0.0.0/0  md5" >> /var/lib/pgsql/data/pg_hba.conf'
 
-POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
-
 sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '${POSTGRES_PASSWORD}';"
 
 sudo systemctl restart postgresql
