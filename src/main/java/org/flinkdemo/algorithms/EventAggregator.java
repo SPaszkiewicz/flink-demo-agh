@@ -13,7 +13,9 @@ import org.flinkdemo.model.EventCount;
 
 public class EventAggregator {
 
-    public static void performEventAggregation(StreamExecutionEnvironment env, KafkaSource<AmplitudeEvent> kafkaSource, String postgresIp) throws Exception {
+    public static void performEventAggregation(
+        StreamExecutionEnvironment env, KafkaSource<AmplitudeEvent> kafkaSource, String postgresIp
+    ) throws Exception {
 
         var sourceStream = env.fromSource(
                 kafkaSource,
