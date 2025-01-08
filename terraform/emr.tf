@@ -132,4 +132,36 @@ EOF
       args  = ["sudo", "mkdir", "/usr/lib/flink/algorithms"]
     }
   }
+
+  step {
+    action_on_failure = "CONTINUE"
+    name              = "copy-job-jar"
+    hadoop_jar_step {
+      jar  = "command-runner.jar"
+      args = [
+        "bash",
+        "-c",
+        "aws s3 cp s3://${var.BUCKET_NAME}/jars/my-flink-job-1.0.0-shaded.jar /usr/lib/flink/algorithms/"
+      ]
+    }
+  }
+
+  step {
+    action_on_failure = "CONTINUE"
+    name              = "run-flink-demo-job"
+    hadoop_jar_step {
+      jar  = "command-runner.jar"
+      args = [
+        "flink",
+        "run",
+        "-m", "yarn-cluster",
+        "-yn", "2",
+        "-yjm", "1024",
+        "-ytm", "1024",
+        "/usr/lib/flink/algorithms/my-flink-job-1.0.0-shaded.jar",
+        aws_instance.kafka_instance.private_ip,
+        aws_instance.postgres_instance.private_ip
+      ]
+    }
+  }
 }

@@ -8,12 +8,12 @@ import org.flinkdemo.inbound.KafkaConfiguration;
 
 public class FlinkJobsController {
 
-    public static void runFlinkJobs(String kafkaIp, String kafkaTopic, String postgresIp) {
+    public static void runFlinkJobs(String kafkaIp, String postgresIp) {
 
         createTablesIfNecessary(postgresIp);
 
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        var kafkaSource = KafkaConfiguration.buildKafkaSource(kafkaIp, kafkaTopic);
+        var kafkaSource = KafkaConfiguration.buildKafkaSource(kafkaIp);
 
         try {
             performEventAggregation(env, kafkaSource, postgresIp);
