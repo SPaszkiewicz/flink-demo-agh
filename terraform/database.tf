@@ -18,7 +18,7 @@ variable "POSTGRES_PASSWORD" {
   description = "Password for the default postgres superuser"
   type        = string
   sensitive   = true
-  default     = "FlinkPassword123"
+  default     = "postgres"
 }
 
 resource "aws_security_group" "postgres_sg" {
@@ -26,22 +26,21 @@ resource "aws_security_group" "postgres_sg" {
   description = "Allow inbound PostgreSQL traffic"
   vpc_id      = aws_vpc.main.id
 
-  ingress {
-    description = "PostgreSQL inbound"
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
-  }
-
-  egress {
-    description = "Allow all outbound"
+ingress {
+    description = "Allow all inbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   tags = {
     Name = "postgres_access"
   }
@@ -55,7 +54,7 @@ resource "aws_instance" "postgres_instance" {
   vpc_security_group_ids = [aws_security_group.postgres_sg.id]
 
   user_data = templatefile("scripts/bash/setup-database.sh", {
-    POSTGRES_PASSWORD = "FlinkPassword123"
+    POSTGRES_PASSWORD = "postgres"
   })
 
   tags = {

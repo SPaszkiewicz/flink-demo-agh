@@ -12,7 +12,7 @@ import java.sql.Statement;
 public class PostgresUtil {
 
     private static final String POSTGRES_USER = "postgres";
-    private static final String POSTGRES_PASSWORD = "FlinkPassword123";
+    private static final String POSTGRES_PASSWORD = "postgres";
 
     public static SinkFunction<EventCount> eventAggregatorSink(String postgresIp) {
 

@@ -125,7 +125,7 @@ EOF
   }
 
   step {
-    action_on_failure = "CONTINUE"
+    action_on_failure = "TERMINATE_CLUSTER"
     name              = "create-algorithms-directory"
     hadoop_jar_step {
       jar   = "command-runner.jar"
@@ -134,33 +134,31 @@ EOF
   }
 
   step {
-    action_on_failure = "CONTINUE"
+    action_on_failure = "TERMINATE_CLUSTER"
     name              = "copy-job-jar"
     hadoop_jar_step {
       jar  = "command-runner.jar"
       args = [
         "bash",
         "-c",
-        "aws s3 cp s3://${var.BUCKET_NAME}/jars/my-flink-job-1.0.0-shaded.jar /usr/lib/flink/algorithms/"
+        "sudo aws s3 cp s3://${var.BUCKET_NAME}/jar-files/flink-demo-job-1.0.0.jar /usr/lib/flink/algorithms/"
       ]
     }
   }
 
   step {
-    action_on_failure = "CONTINUE"
+    action_on_failure = "TERMINATE_CLUSTER"
     name              = "run-flink-demo-job"
     hadoop_jar_step {
       jar  = "command-runner.jar"
       args = [
+        "sudo",
         "flink",
         "run",
         "-m", "yarn-cluster",
-        "-yn", "2",
-        "-yjm", "1024",
-        "-ytm", "1024",
-        "/usr/lib/flink/algorithms/my-flink-job-1.0.0-shaded.jar",
-        aws_instance.kafka_instance.private_ip,
-        aws_instance.postgres_instance.private_ip
+        "/usr/lib/flink/algorithms/flink-demo-job-1.0.0.jar",
+        "${aws_instance.kafka_instance.private_ip}",
+        "${aws_instance.postgres_instance.private_ip}"
       ]
     }
   }

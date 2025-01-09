@@ -12,6 +12,7 @@ locals {
   emr_instances_script_path   = "${path.root}/scripts/bash/setup-emr-instances.sh"
   sidecar_config_path         = "${path.root}/sidecar/config.json"
   sidecar_service_path        = "${path.root}/sidecar/sidecar-service-1.0.0"
+  job_jar_file_path           = "${path.root}/jar-files/flink-demo-job-1.0.0.jar"
 }
 
 resource "aws_s3_object" "emr_logs_folder" {
@@ -45,6 +46,13 @@ resource "aws_s3_object" "upload_sidecar_config" {
   key         = "sidecar/config.json"
   source      = local.sidecar_config_path
   source_hash = filemd5(local.sidecar_config_path)
+}
+
+resource "aws_s3_object" "upload_job_jar_file" {
+  bucket      = aws_s3_bucket.s3_bucket.id
+  key         = "jar-files/flink-demo-job-1.0.0.jar"
+  source      = local.job_jar_file_path
+  source_hash = filemd5(local.job_jar_file_path)
 }
 
 resource "aws_s3_object" "algorithms_folder" {
