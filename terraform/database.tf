@@ -49,6 +49,7 @@ ingress {
 resource "aws_instance" "postgres_instance" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = var.POSTGRES_INSTANCE_TYPE
+  associate_public_ip_address = true
 
   subnet_id              = aws_subnet.private_subnets[0].id
   vpc_security_group_ids = [aws_security_group.postgres_sg.id]
