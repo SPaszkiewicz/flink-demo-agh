@@ -125,7 +125,7 @@ EOF
   }
 
   step {
-    action_on_failure = "TERMINATE_CLUSTER"
+    action_on_failure = "CONTINUE"
     name              = "create-algorithms-directory"
     hadoop_jar_step {
       jar   = "command-runner.jar"
@@ -134,7 +134,7 @@ EOF
   }
 
   step {
-    action_on_failure = "TERMINATE_CLUSTER"
+    action_on_failure = "CONTINUE"
     name              = "copy-job-jar"
     hadoop_jar_step {
       jar  = "command-runner.jar"
@@ -147,7 +147,7 @@ EOF
   }
 
   step {
-    action_on_failure = "TERMINATE_CLUSTER"
+    action_on_failure = "CONTINUE"
     name              = "run-flink-demo-job"
     hadoop_jar_step {
       jar  = "command-runner.jar"
