@@ -65,7 +65,7 @@ variable "PROVIDER" {
 variable "BUCKET_NAME" {
   type        = string
   description = "Name for bucket"
-  default     = "flink-algorithm-storage"
+  default     = "flink-algorithm-storage-instance-1"
 }
 
 variable "KEY_PAIR" {
