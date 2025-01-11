@@ -7,13 +7,8 @@ import (
 )
 
 func main() {
-	kafkaAddr := os.Getenv("KAFKA_IP")
-	if kafkaAddr == "" {
-		panic("kafka address not found")
-	}
-
 	topicName := os.Getenv("TOPIC_NAME")
-	if kafkaAddr == "" {
+	if topicName == "" {
 		panic("topic name not found")
 	}
 
@@ -21,6 +16,7 @@ func main() {
 	if err != nil {
 		panic("number of events not found")
 	}
+	kafkaAddr := "localhost:9092"
 
 	client := &kafka.Writer{
 		Addr:                   kafka.TCP(kafkaAddr),

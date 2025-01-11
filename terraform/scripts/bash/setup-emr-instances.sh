@@ -18,10 +18,6 @@ sudo yum install kernel-devel-$(uname -r) -y
 sudo yum update -y
 export PATH=$PATH:/usr/share/bcc/tools/
 
-echo -e '---- Fetching Sidecar ---- \n'
-sudo aws s3 cp s3://$2/sidecar/config.json ./sidecar/config.json
-sudo aws s3 cp s3://$2/sidecar/sidecar-service-1.0.0 ./sidecar/sidecar-service-1.0.0
-
 cat > cloudwatch-config.json << EOL
 {
     "agent": {
@@ -55,9 +51,3 @@ sudo amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:cloudwatch-confi
 
 echo -e '---- Status of CloudWatch Agent ---- \n'
 sudo amazon-cloudwatch-agent-ctl -a status
-
-cd sidecar
-sudo chmod 744 sidecar-service-1.0.0
-sudo chmod 744 config.json
-sudo ./sidecar-service-1.0.0 "$1:9092" $(ec2-metadata --instance-id | cut -d' ' -f2-) "/emr/instance-controller/lib/bootstrap-actions/1/sidecar/config.json" &
-cd ..

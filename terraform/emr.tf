@@ -10,8 +10,6 @@ resource "aws_emr_cluster" "cluster" {
   depends_on = [
     aws_s3_bucket.s3_bucket,
     aws_s3_object.upload_emr_instances_config,
-    aws_s3_object.upload_sidecar_service,
-    aws_s3_object.upload_sidecar_config
   ]
 
   ec2_attributes {
@@ -112,7 +110,7 @@ EOF
   bootstrap_action {
     name = "bootstrap-ec2-configuration"
     path = "s3://${aws_s3_object.upload_emr_instances_config.bucket}/scripts/setup-emr-instances.sh"
-    args = [aws_instance.kafka_instance.private_ip, aws_s3_object.upload_emr_instances_config.bucket]
+    args = []
   }
 
   step {
