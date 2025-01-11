@@ -10,8 +10,6 @@ resource "aws_emr_cluster" "cluster" {
   depends_on = [
     aws_s3_bucket.s3_bucket,
     aws_s3_object.upload_emr_instances_config,
-    aws_s3_object.upload_sidecar_service,
-    aws_s3_object.upload_sidecar_config
   ]
 
   ec2_attributes {
@@ -112,7 +110,7 @@ EOF
   bootstrap_action {
     name = "bootstrap-ec2-configuration"
     path = "s3://${aws_s3_object.upload_emr_instances_config.bucket}/scripts/setup-emr-instances.sh"
-    args = [aws_instance.kafka_instance.private_ip, aws_s3_object.upload_emr_instances_config.bucket]
+    args = []
   }
 
   step {
@@ -130,6 +128,36 @@ EOF
     hadoop_jar_step {
       jar   = "command-runner.jar"
       args  = ["sudo", "mkdir", "/usr/lib/flink/algorithms"]
+    }
+  }
+
+  step {
+    action_on_failure = "CONTINUE"
+    name              = "copy-job-jar"
+    hadoop_jar_step {
+      jar  = "command-runner.jar"
+      args = [
+        "bash",
+        "-c",
+        "sudo aws s3 cp s3://${var.BUCKET_NAME}/jar-files/flink-demo-job-1.0.0.jar /usr/lib/flink/algorithms/"
+      ]
+    }
+  }
+
+  step {
+    action_on_failure = "CONTINUE"
+    name              = "run-flink-demo-job"
+    hadoop_jar_step {
+      jar  = "command-runner.jar"
+      args = [
+        "sudo",
+        "flink",
+        "run",
+        "-m", "yarn-cluster",
+        "/usr/lib/flink/algorithms/flink-demo-job-1.0.0.jar",
+        "${aws_instance.kafka_instance.private_ip}",
+        "${aws_instance.postgres_instance.private_ip}"
+      ]
     }
   }
 }

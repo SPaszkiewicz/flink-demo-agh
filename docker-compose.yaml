@@ -24,7 +24,7 @@ services:
     container_name: postgres-db
     environment:
       POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "FlinkPassword123"
+      POSTGRES_PASSWORD: "postgres"
       POSTGRES_DB: "flinkdb"
     ports:
       - "5432:5432"

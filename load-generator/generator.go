@@ -34,8 +34,10 @@ var httpPaths = []string{"/v1/users", "/favicon.ico", "/v1/home", "/shop/card/cu
 var statusCodes = []string{"200", "302", "403", "401", "400"}
 
 func (g *Generator) GenerateAmplitudeLoad() {
+	routineLimiter := make(chan struct{}, 40)
 
 	for i := 0; i < g.NumOfEvents; i++ {
+		routineLimiter <- struct{}{}
 		userId := fmt.Sprintf("USR_%d", rand.Intn(100))
 		eventType := userEvents[rand.Intn(len(userEvents))]
 		userProperties := make(map[string]string)
@@ -72,41 +74,43 @@ func (g *Generator) GenerateAmplitudeLoad() {
 			Time:  time.Now(),
 		}
 
-		time.Sleep(time.Millisecond * 100)
-		err = g.kafkaClient.WriteMessages(context.Background(), msg)
+		go func() {
+			err = g.kafkaClient.WriteMessages(context.Background(), msg)
 
-		if err != nil {
-			fmt.Printf("error occured: %s", err.Error())
-		}
+			if err != nil {
+				fmt.Printf("error occured: %s", err.Error())
+			}
+			<-routineLimiter
+		}()
 	}
 }
 
 // GenerateApacheLoad based on the apache log format https://httpd.apache.org/docs/2.4/logs.html
 func (g *Generator) GenerateApacheLoad() {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
-
 	for i := 0; i < g.NumOfEvents; i++ {
-		userId := fmt.Sprintf("USR_%d", rand.Intn(100))
-		userIp := fmt.Sprintf("%d.%d.%d.%d", rand.Intn(200), rand.Intn(200), rand.Intn(200), rand.Intn(200))
-		sc := statusCodes[rand.Intn(len(statusCodes))]
-		path := httpPaths[rand.Intn(len(httpPaths))]
-		method := httpMethods[rand.Intn(len(httpMethods))]
-		size := rand.Intn(3600)
-		t := time.Now()
-		userTime := timefmt.Format(t, "%d/%b/%Y:%H:%M:%S %z")
+		go func() {
+			userId := fmt.Sprintf("USR_%d", rand.Intn(100))
+			userIp := fmt.Sprintf("%d.%d.%d.%d", rand.Intn(200), rand.Intn(200), rand.Intn(200), rand.Intn(200))
+			sc := statusCodes[rand.Intn(len(statusCodes))]
+			path := httpPaths[rand.Intn(len(httpPaths))]
+			method := httpMethods[rand.Intn(len(httpMethods))]
+			size := rand.Intn(3600)
+			t := time.Now()
+			userTime := timefmt.Format(t, "%d/%b/%Y:%H:%M:%S %z")
 
-		event := fmt.Sprintf("%s - %s [%s] \"%s %s HTTP/1.0\" %s %d", userIp, userId, userTime, method, path, sc, size)
+			event := fmt.Sprintf("%s - %s [%s] \"%s %s HTTP/1.0\" %s %d", userIp, userId, userTime, method, path, sc, size)
 
-		msg := kafka.Message{
-			Key:   []byte(""),
-			Value: []byte(event),
-			Time:  time.Now(),
-		}
+			msg := kafka.Message{
+				Key:   []byte(""),
+				Value: []byte(event),
+				Time:  time.Now(),
+			}
 
-		time.Sleep(time.Millisecond * 100)
-		err := g.kafkaClient.WriteMessages(ctx, msg)
-		if err != nil {
-			fmt.Printf("error occured: %s", err.Error())
-		}
+			time.Sleep(time.Millisecond * 100)
+			err := g.kafkaClient.WriteMessages(context.Background(), msg)
+			if err != nil {
+				fmt.Printf("error occured: %s", err.Error())
+			}
+		}()
 	}
 }

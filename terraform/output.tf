@@ -5,3 +5,7 @@ output "emr_id" {
 output "kafka_ip" {
   value = aws_instance.kafka_instance.public_ip
 }
+
+output "postgres_ip" {
+  value       = aws_instance.postgres_instance.public_ip
+}
