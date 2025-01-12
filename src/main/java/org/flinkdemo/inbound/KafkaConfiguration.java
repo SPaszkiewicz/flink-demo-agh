@@ -16,7 +16,7 @@ public class KafkaConfiguration {
                 .setTopics(KAFKA_TOPIC_NAME)
                 .setGroupId("my-flink-job-group")
                 .setValueOnlyDeserializer(new AmplitudeEventDeserializationSchema())
-                .setStartingOffsets(OffsetsInitializer.latest())
+                .setStartingOffsets(OffsetsInitializer.earliest())
                 .build();
     }
 }
