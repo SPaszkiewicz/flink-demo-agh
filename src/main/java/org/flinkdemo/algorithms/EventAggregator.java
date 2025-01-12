@@ -33,6 +33,7 @@ public class EventAggregator {
 
         aggregatedStream.addSink(jdbcSink);
 
+        System.out.println("Execute Job");
         env.execute("MyFlinkJob -> Event Aggregation");
     }
 
