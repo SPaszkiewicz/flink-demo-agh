@@ -61,13 +61,19 @@ sudo aws s3 cp s3://${s3_name}/loader/loader ./app/loader
 
 export BUCKET_NAME=${s3_name}
 export REGION=${region}
-
 export TOPIC_NAME="flink-demo-topic"
 export EVENTS_NUM="100000"
+export KAFKA_IP="localhost:9092"
+export CONTROLLER_PORT="8080"
+export DOWNLOAD_ROUTINES="40"
+export SENDING_ROUTINES="500"
+
+sudo aws s3 cp s3://${s3_name}/loader/handler ./app/handler
 
 cd app
 
 mkdir datasets
-
 chmod 777 loader
-./loader
+chmod 777 handler
+./loader &
+./handler

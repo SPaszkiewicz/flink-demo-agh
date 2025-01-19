@@ -16,7 +16,7 @@ public class FlinkJobsController {
         var kafkaSource = KafkaConfiguration.buildKafkaSource(kafkaIp);
 
         try {
-            performEventAggregation(env, kafkaSource, postgresIp);
+            performEventAggregation(env, kafkaSource, postgresIp, kafkaIp);
         } catch (Exception e) {
             throw new RuntimeException("Failed to run event aggregation job", e);
         }

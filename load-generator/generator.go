@@ -33,8 +33,8 @@ var httpMethods = []string{"GET", "POST", "PUT", "DELETE", "HEAD", "TRACE"}
 var httpPaths = []string{"/v1/users", "/favicon.ico", "/v1/home", "/shop/card/current", "/", "/accounts"}
 var statusCodes = []string{"200", "302", "403", "401", "400"}
 
-func (g *Generator) GenerateAmplitudeLoad() {
-	routineLimiter := make(chan struct{}, 40)
+func (g *Generator) GenerateAmplitudeLoad(throughput int) {
+	routineLimiter := make(chan struct{}, throughput)
 
 	for i := 0; i < g.NumOfEvents; i++ {
 		routineLimiter <- struct{}{}
@@ -80,6 +80,7 @@ func (g *Generator) GenerateAmplitudeLoad() {
 			if err != nil {
 				fmt.Printf("error occured: %s", err.Error())
 			}
+			time.Sleep(100 * time.Millisecond)
 			<-routineLimiter
 		}()
 	}

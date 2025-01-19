@@ -11,6 +11,7 @@ locals {
   loader_path                 = "${path.root}/loader/loader-2.0.0"
   emr_instances_script_path   = "${path.root}/scripts/bash/setup-emr-instances.sh"
   job_jar_file_path           = "${path.root}/jar-files/flink-demo-job-1.0.0.jar"
+  kafka_handler_path          = "${path.root}/loader/kafka-handler"
 }
 
 resource "aws_s3_object" "emr_logs_folder" {
@@ -23,6 +24,13 @@ resource "aws_s3_object" "upload_loader" {
   key         = "loader/loader"
   source      = local.loader_path
   source_hash = filemd5(local.loader_path)
+}
+
+resource "aws_s3_object" "upload_handler" {
+  bucket      = aws_s3_bucket.s3_bucket.id
+  key         = "loader/handler"
+  source      = local.kafka_handler_path
+  source_hash = filemd5(local.kafka_handler_path)
 }
 
 resource "aws_s3_object" "upload_emr_instances_config" {

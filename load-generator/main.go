@@ -16,6 +16,12 @@ func main() {
 	if err != nil {
 		panic("number of events not found")
 	}
+
+	throughput, err := strconv.Atoi(os.Getenv("SENDING_ROUTINES"))
+	if err != nil {
+		panic("throughput not defined")
+	}
+
 	kafkaAddr := "localhost:9092"
 
 	client := &kafka.Writer{
@@ -29,5 +35,5 @@ func main() {
 		client,
 	}
 
-	g.GenerateAmplitudeLoad()
+	g.GenerateAmplitudeLoad(throughput)
 }

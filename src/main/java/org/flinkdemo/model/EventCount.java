@@ -9,6 +9,7 @@ public class EventCount {
     private long count;
 
     public EventCount(String eventType, long count) {
+        System.out.println("Received event: " + eventType);
         this.eventType = eventType;
         this.count = count;
     }

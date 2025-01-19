@@ -8,13 +8,14 @@ import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.flinkdemo.metrics.MetricsEmitter;
 import org.flinkdemo.model.AmplitudeEvent;
 import org.flinkdemo.model.EventCount;
 
 public class EventAggregator {
 
     public static void performEventAggregation(
-        StreamExecutionEnvironment env, KafkaSource<AmplitudeEvent> kafkaSource, String postgresIp
+        StreamExecutionEnvironment env, KafkaSource<AmplitudeEvent> kafkaSource, String postgresIp, String kafkaIp
     ) throws Exception {
 
         var sourceStream = env.fromSource(
@@ -24,6 +25,7 @@ public class EventAggregator {
         );
 
         var aggregatedStream = sourceStream
+                .map(new MetricsEmitter(kafkaIp, "metrics"))
                 .map(event -> new EventCount(event.getEventType(), 1L))
                 .keyBy(EventCount::getEventType)
                 .window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
@@ -40,6 +42,7 @@ public class EventAggregator {
     private static ReduceFunction<EventCount> eventCountReduceFunction() {
         return (t1, t2) -> {
             t1.setCount(t1.getCount() + t2.getCount());
+            System.out.println("Events reduced to: " + (t1.getCount() + t2.getCount()));
             return t1;
         };
     }
