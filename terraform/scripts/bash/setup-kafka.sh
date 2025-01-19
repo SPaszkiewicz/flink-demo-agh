@@ -62,11 +62,11 @@ sudo aws s3 cp s3://${s3_name}/loader/loader ./app/loader
 export BUCKET_NAME=${s3_name}
 export REGION=${region}
 export TOPIC_NAME="flink-demo-topic"
-export EVENTS_NUM="100000"
+export EVENTS_NUM="10000000"
 export KAFKA_IP="localhost:9092"
 export CONTROLLER_PORT="8080"
 export DOWNLOAD_ROUTINES="40"
-export SENDING_ROUTINES="500"
+export SENDING_ROUTINES="1000"
 
 sudo aws s3 cp s3://${s3_name}/loader/handler ./app/handler
 
